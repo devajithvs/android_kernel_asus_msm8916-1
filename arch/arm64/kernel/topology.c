@@ -135,7 +135,10 @@ static int __init parse_cluster(struct device_node *cluster, int depth)
 	 */
 	i = 0;
 	do {
-		snprintf(name, sizeof(name), "cluster%d", i);
+		int ret = snprintf(name, sizeof(name), "cluster%d", i);
+		if (ret < 0) {
+			abort();
+		}
 		c = of_get_child_by_name(cluster, name);
 		if (c) {
 			leaf = false;
