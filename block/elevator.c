@@ -41,6 +41,7 @@
 #include "blk.h"
 #include "blk-cgroup.h"
 
+void abort(void);
 static DEFINE_SPINLOCK(elv_list_lock);
 static LIST_HEAD(elv_list);
 
@@ -886,15 +887,18 @@ EXPORT_SYMBOL(elv_unregister_queue);
 int elv_register(struct elevator_type *e)
 {
 	char *def = "";
-
+	int ret;
 	/* create icq_cache if requested */
 	if (e->icq_size) {
 		if (WARN_ON(e->icq_size < sizeof(struct io_cq)) ||
 		    WARN_ON(e->icq_align < __alignof__(struct io_cq)))
 			return -EINVAL;
 
-		snprintf(e->icq_cache_name, sizeof(e->icq_cache_name),
+		ret = snprintf(e->icq_cache_name, sizeof(e->icq_cache_name),
 			 "%s_io_cq", e->elevator_name);
+		if (ret < 0) {
+                        abort();
+                }
 		e->icq_cache = kmem_cache_create(e->icq_cache_name, e->icq_size,
 						 e->icq_align, 0, NULL);
 		if (!e->icq_cache)

@@ -41,6 +41,7 @@ export LC_COLLATE LC_NUMERIC
 # To put more focus on warnings, be less verbose as default
 # Use 'make V=1' to see the full commands
 
+# disable stringop warnings in gcc 8+
 ifeq ("$(origin V)", "command line")
   KBUILD_VERBOSE = $(V)
 endif

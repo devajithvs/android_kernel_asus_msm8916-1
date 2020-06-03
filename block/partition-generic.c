@@ -20,6 +20,8 @@
 
 #include "partitions/check.h"
 
+void abort(void);
+
 #ifdef CONFIG_BLK_DEV_MD
 extern void md_autodetect_dev(dev_t dev);
 #endif
@@ -33,12 +35,25 @@ extern void md_autodetect_dev(dev_t dev);
 
 char *disk_name(struct gendisk *hd, int partno, char *buf)
 {
-	if (!partno)
-		snprintf(buf, BDEVNAME_SIZE, "%s", hd->disk_name);
-	else if (isdigit(hd->disk_name[strlen(hd->disk_name)-1]))
-		snprintf(buf, BDEVNAME_SIZE, "%sp%d", hd->disk_name, partno);
-	else
-		snprintf(buf, BDEVNAME_SIZE, "%s%d", hd->disk_name, partno);
+	int ret;
+	if (!partno) {
+		ret = snprintf(buf, BDEVNAME_SIZE, "%s", hd->disk_name);
+		if (ret < 0) {
+                        abort();
+                }
+	}
+	else if (isdigit(hd->disk_name[strlen(hd->disk_name)-1])) {
+		ret = snprintf(buf, BDEVNAME_SIZE, "%sp%d", hd->disk_name, partno);
+		if (ret < 0) {
+                        abort();
+                }
+	}
+	else {
+		ret = snprintf(buf, BDEVNAME_SIZE, "%s%d", hd->disk_name, partno);
+		if (ret < 0) {
+                        abort();
+                }
+	}
 
 	return buf;
 }

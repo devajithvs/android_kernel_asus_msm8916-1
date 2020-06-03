@@ -1,4 +1,3 @@
-
 /*
  * Shared async block cipher helpers
  *
@@ -34,8 +33,6 @@
 #include <crypto/cryptd.h>
 #include <crypto/ablk_helper.h>
 #include <asm/simd.h>
-
-void abort(void);
 
 int ablk_set_key(struct crypto_ablkcipher *tfm, const u8 *key,
 		 unsigned int key_len)
@@ -146,9 +143,7 @@ int ablk_init(struct crypto_tfm *tfm)
 
 	ret = snprintf(drv_name, sizeof(drv_name), "__driver-%s",
 					crypto_tfm_alg_driver_name(tfm));
-	if (ret < 0) {
-        	abort();
-        }
+	/home/devajith/android_kernel_asus_msm8916-1/crypto/ablk_helper.c
 
 	return ablk_init_common(tfm, drv_name);
 }

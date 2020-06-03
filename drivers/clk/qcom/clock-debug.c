@@ -29,6 +29,8 @@
 
 #include "clock.h"
 
+void abort(void);
+
 static LIST_HEAD(clk_list);
 static DEFINE_MUTEX(clk_list_lock);
 
@@ -202,6 +204,7 @@ static int fmax_rates_show(struct seq_file *m, void *unused)
 	struct clk_vdd_class *vdd_class = clock->vdd_class;
 	int level = 0, i, nregs = vdd_class->num_regulators;
 	char reg_name[10];
+	int ret;
 
 	int vdd_level = find_vdd_level(clock, clock->rate);
 	if (vdd_level < 0) {
@@ -212,7 +215,10 @@ static int fmax_rates_show(struct seq_file *m, void *unused)
 
 	seq_printf(m, "%12s", "");
 	for (i = 0; i < nregs; i++) {
-		snprintf(reg_name, ARRAY_SIZE(reg_name), "reg %d", i);
+		ret = snprintf(reg_name, ARRAY_SIZE(reg_name), "reg %d", i);
+		if (ret < 0) {
+                	abort();
+                }
 		seq_printf(m, "%10s", reg_name);
 		if (vdd_class->vdd_ua)
 			seq_printf(m, "%10s", "");

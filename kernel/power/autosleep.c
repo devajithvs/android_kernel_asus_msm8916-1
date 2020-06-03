@@ -167,15 +167,15 @@ int __init pm_autosleep_init(void)
         printk("%s:fail to register switch power_manager_printer \n",__func__);
     else
         printk("%s:success to register pmsp switch \n",__func__);
-	//[---]Debug for active wakelock before entering suspend
-	autosleep_ws = wakeup_source_register("autosleep");
-	if (!autosleep_ws)
-		return -ENOMEM;
-
-	autosleep_wq = alloc_ordered_workqueue("autosleep", 0);
-	if (autosleep_wq)
-		return 0;
-
-	wakeup_source_unregister(autosleep_ws);
+    //[---]Debug for active wakelock before entering suspend
+    autosleep_ws = wakeup_source_register("autosleep");
+    if (!autosleep_ws)
 	return -ENOMEM;
+
+    autosleep_wq = alloc_ordered_workqueue("autosleep", 0);
+    if (autosleep_wq)
+    	return 0;
+
+    wakeup_source_unregister(autosleep_ws);
+    return -ENOMEM;
 }

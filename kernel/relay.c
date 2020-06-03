@@ -23,6 +23,7 @@
 #include <linux/cpu.h>
 #include <linux/splice.h>
 
+void abort(void);
 /* list of open channels, for cpu hotplug */
 static DEFINE_MUTEX(relay_channels_mutex);
 static LIST_HEAD(relay_channels);
@@ -416,12 +417,15 @@ static struct dentry *relay_create_buf_file(struct rchan *chan,
 {
 	struct dentry *dentry;
 	char *tmpname;
+	int ret;
 
 	tmpname = kzalloc(NAME_MAX + 1, GFP_KERNEL);
 	if (!tmpname)
 		return NULL;
-	snprintf(tmpname, NAME_MAX, "%s%d", chan->base_filename, cpu);
-
+	ret = snprintf(tmpname, NAME_MAX, "%s%d", chan->base_filename, cpu);
+	if (ret < 0) {
+		abort();
+	}
 	/* Create file in fs */
 	dentry = chan->cb->create_buf_file(tmpname, chan->parent,
 					   S_IRUSR, buf,
